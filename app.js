@@ -2,7 +2,7 @@ var serverPort = 1337;
 
 
 var express = require('express'),
-    hueWrapper = require('./hueWrapper'),
+    lights = require('./hueWrapper'),
     logger = require('./logger'),
     triggerDecider = require('./triggerDecider'),
     actionRunner = require('./actionRunner');
@@ -16,7 +16,7 @@ app.get('/', function(req, res) {
     triggerDecider.handleRawInput(req.query);
 });
 
-hueWrapper.init();
+lights.init();
 triggerDecider.init();
 actionRunner.init();
 app.listen(serverPort);

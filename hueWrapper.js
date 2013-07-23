@@ -15,6 +15,17 @@ var _ = require('underscore'),
         lightArray,
         lightNamesToIds;
 
+
+    function Light(lightName) {
+        this.lightId = lightNamesToIds[lightName];
+        this.on = function() {
+            hueApi
+                .setLightState(this.lightId, lightState.create().on())
+                .done();
+        };
+    }
+
+
     function doHueBridgeInfoReceived(hueBridges) {
         logger.i('Bridge Info Received!');
         logger.i(util.format('%d Hue Bridges Found: %s', hueBridges.length, util.inspect(hueBridges)));
@@ -64,6 +75,12 @@ var _ = require('underscore'),
         }
     }
 
+    function getLightByName(lightName) {
+//        logger.i(util.format('Turning on all %d lights.', lightArray.length));
+
+        return new Light(lightName);
+    }
+
     function init() {
         logger.i('Fetching Bridge Info!');
         hue.locateBridges()
@@ -73,6 +90,7 @@ var _ = require('underscore'),
 
     exports.init = init;
     exports.turnOnAllLights = turnOnAllLights;
+    exports.getLightByName = getLightByName;
 })(exports);
 
 

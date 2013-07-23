@@ -15,7 +15,7 @@
         this.sensor = sensor;
         this.actionId = actionId;
         this.shouldFire = function(sensor) {
-            logger.i("Trigger.prototype.shouldFire: " + this.sensor);
+//            logger.i("Trigger.prototype.shouldFire: " + this.sensor);
             return (this.sensor == sensor);
         };
         this.fire = function() {
