@@ -23,6 +23,11 @@ var _ = require('underscore'),
                 .setLightState(this.lightId, lightState.create().on())
                 .done();
         };
+        this.off = function() {
+            hueApi
+                .setLightState(this.lightId, lightState.create().off())
+                .done();
+        };
     }
 
 
@@ -76,8 +81,6 @@ var _ = require('underscore'),
     }
 
     function getLightByName(lightName) {
-//        logger.i(util.format('Turning on all %d lights.', lightArray.length));
-
         return new Light(lightName);
     }
 

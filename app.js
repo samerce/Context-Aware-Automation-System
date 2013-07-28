@@ -1,24 +1,28 @@
-var serverPort = 1337;
+var serverPort = 11337;
 
 
 var express = require('express'),
     lights = require('./hueWrapper'),
+    util = require('util'),
     logger = require('./logger'),
-    triggerDecider = require('./triggerDecider'),
-    actionRunner = require('./actionRunner');
+    sensorTriggerDecider = require('./sensorEventTriggerDecider'),
+    actionRunner = require('./actionRunner'),
+    wifiStatus = require('./wifiConnectStatus');
 
 var app = express();
 app.get('/', function(req, res) {
     var message = "Success!"
 	res.send(message);
 
-//    triggerDecider.handleRawInput({sensor:"C2"});
-    triggerDecider.handleRawInput(req.query);
+//    sensorTriggerDecider.handleRawInput({sensor:"C2"});
+    sensorTriggerDecider.handleRawInput(req.query);
 });
 
+
 lights.init();
-triggerDecider.init();
+sensorTriggerDecider.init();
 actionRunner.init();
+//wifiStatus.init();
 app.listen(serverPort);
 
 logger.i('Server running!');

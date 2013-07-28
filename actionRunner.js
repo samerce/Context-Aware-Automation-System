@@ -2,53 +2,42 @@
     actionRunner
 */
 
-var util = require('util'),
+var _ = require('underscore'),
+    util = require('util'),
     logger = require('./logger'),
-    lights = require('./hueWrapper');
+    lights = require('./hueWrapper'),
+    ActionDirectory = require('./action/actionDirectory'),
+    Events = require('./events');
 
 (function(context) {
 
-    function Action(actionId) {
-        logger.i('Action constructor: ' + actionId);
-        this.actionId = actionId;
-    }
-    Action.prototype.run = function() {
-         logger.i(util.format("Running action %s!", this.actionId));
-    };
-
-
-    function LightAction(actionId, lightName) {
-        Action.call(this, actionId);
-        this.lightName = lightName;
-        logger.i('LightAction constructor: ' + actionId);
-    }
-    LightAction.prototype = new Action();
-    LightAction.prototype.run = function() {
-        logger.i(util.format("Running LightAction %s!", this.actionId));
-
-        lights.getLightByName(this.lightName).on();
-    };
-
-
-
-    function runAction(actionId) {
-        var action = this.ACTIONS[actionId];
-        if (!action) {
+    var ACTIONS = {};
+    function runActionsForEvent(eventId) {
+        var actions = ACTIONS[eventId];
+        if (!actions) {
             return;
         }
-        action.run();
+        _.each(actions, function(action) {
+            action.run();
+        });
     }
 
     function init() {
-        var ACTIONS = {};
-        AddLightAction("turnOnBottomStairLight");
-        this.ACTIONS = ACTIONS;
+        addAction(Events.TURN_ON_ENTRANCE_LIGHT, new ActionDirectory.TurnOnLightAction("Stairs Bottom"));
+        addAction(Events.TURN_ON_ENTRANCE_LIGHT, new ActionDirectory.DelayedAction(
+            new ActionDirectory.TurnOffLightAction("Stairs Bottom"), 60000));
+    }
 
-        function AddLightAction(actionId) {
-            ACTIONS[actionId] = new LightAction(actionId, "Stairs Bottom")
-        }
+    function addAction(eventId, action) {
+        ACTIONS = ACTIONS || {};
+        var actions = ACTIONS[eventId];
+
+        actions = actions || [];
+        actions.push(action);
+
+        ACTIONS[eventId] = actions;
     }
 
     exports.init = init;
-    exports.runAction = runAction;
+    exports.runActionsForEvent = runActionsForEvent;
 })(exports);
